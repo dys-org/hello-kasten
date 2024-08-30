@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useColorMode } from '@vueuse/core'
+import { useColorMode } from '@vueuse/core';
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-const mode = useColorMode()
+const mode = useColorMode();
 </script>
 
 <template>

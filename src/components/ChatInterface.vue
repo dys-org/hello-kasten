@@ -1,60 +1,61 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { computed, ref } from 'vue';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Message {
-  content: string
-  role: 'user' | 'assistant'
+  content: string;
+  role: 'user' | 'assistant';
 }
 
-const messages = ref<Message[]>([])
-const isLoading = ref(false)
-const inputMessage = ref('')
+const messages = ref<Message[]>([]);
+const isLoading = ref(false);
+const inputMessage = ref('');
 
 async function onSubmit() {
-  if (!inputMessage.value.trim()) return
+  if (!inputMessage.value.trim()) return;
 
-  const userMessage: Message = { content: inputMessage.value, role: 'user' }
-  messages.value.push(userMessage)
-  isLoading.value = true
+  const userMessage: Message = { content: inputMessage.value, role: 'user' };
+  messages.value.push(userMessage);
+  isLoading.value = true;
 
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        messages: messages.value
-      })
-    })
+        messages: messages.value,
+      }),
+    });
 
-    if (!response.ok) throw new Error('Failed to fetch response')
+    if (!response.ok) throw new Error('Failed to fetch response');
 
-    const data = await response.json()
+    const data = await response.json();
     const assistantMessage: Message = {
       content: data.response,
-      role: 'assistant'
-    }
-    messages.value.push(assistantMessage)
+      role: 'assistant',
+    };
+    messages.value.push(assistantMessage);
   } catch (error) {
-    console.error('Error in chat:', error)
+    console.error('Error in chat:', error);
     messages.value.push({
       content: 'An error occurred. Please try again.',
-      role: 'assistant'
-    })
+      role: 'assistant',
+    });
   } finally {
-    isLoading.value = false
-    inputMessage.value = ''
+    isLoading.value = false;
+    inputMessage.value = '';
   }
 }
 
 const formattedMessages = computed(() =>
   messages.value.map((msg) => ({
     ...msg,
-    content: msg.content.replace(/\n/g, '<br>')
-  }))
-)
+    content: msg.content.replace(/\n/g, '<br>'),
+  })),
+);
 </script>
 
 <template>
@@ -63,15 +64,15 @@ const formattedMessages = computed(() =>
       <div v-for="(message, index) in formattedMessages" :key="index" class="mb-4">
         <div
           :class="[
-            'p-2 rounded-lg max-w-[80%] border-border border shadow-md',
-            message.role === 'user' ? 'bg-primary ml-auto text-primary-foreground' : 'bg-card'
+            'max-w-[80%] rounded-lg border border-border p-2 shadow-md',
+            message.role === 'user' ? 'ml-auto bg-primary text-primary-foreground' : 'bg-card',
           ]"
         >
           <p v-html="message.content"></p>
         </div>
       </div>
     </ScrollArea>
-    <form @submit.prevent="onSubmit" class="p-4 border-t">
+    <form @submit.prevent="onSubmit" class="border-t p-4">
       <div class="flex space-x-2">
         <Input
           v-model="inputMessage"

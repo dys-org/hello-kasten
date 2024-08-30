@@ -1,8 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/prettierrc",
-  "semi": false,
+  "semi": true,
   "tabWidth": 2,
   "singleQuote": true,
   "printWidth": 100,
-  "trailingComma": "none"
+  "trailingComma": "all",
+  "importOrder": ["dotenv/config", "^node:", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"]
 }
