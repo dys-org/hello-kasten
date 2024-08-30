@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
+import ChatMessage from '@/components/ChatMessage.vue';
+import Spinner from '@/components/Spinner.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,6 +14,7 @@ interface Message {
 
 const messages = ref<Message[]>([]);
 const isLoading = ref(false);
+const isStreaming = ref(false);
 const inputMessage = ref('');
 
 async function onSubmit() {
@@ -20,59 +23,52 @@ async function onSubmit() {
   const userMessage: Message = { content: inputMessage.value, role: 'user' };
   messages.value.push(userMessage);
   isLoading.value = true;
+  inputMessage.value = '';
 
   try {
-    const response = await fetch('/api/chat', {
+    const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: messages.value,
-      }),
+      body: JSON.stringify({ messages: messages.value }),
     });
 
-    if (!response.ok) throw new Error('Failed to fetch response');
+    if (!res.ok) throw new Error('Failed to fetch response');
+    const assistantMessageIndex = messages.value.length;
+    messages.value.push({ content: '', role: 'assistant' });
 
-    const data = await response.json();
-    const assistantMessage: Message = {
-      content: data.response,
-      role: 'assistant',
-    };
-    messages.value.push(assistantMessage);
+    if (!(res.body instanceof ReadableStream)) {
+      throw new Error('Response is not a stream');
+    }
+    isLoading.value = false;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      messages.value[assistantMessageIndex].content += chunk;
+    }
   } catch (error) {
     console.error('Error in chat:', error);
-    messages.value.push({
-      content: 'An error occurred. Please try again.',
-      role: 'assistant',
-    });
+    messages.value.push({ content: 'An error occurred. Please try again.', role: 'assistant' });
   } finally {
-    isLoading.value = false;
-    inputMessage.value = '';
+    isStreaming.value = false;
   }
 }
-
-const formattedMessages = computed(() =>
-  messages.value.map((msg) => ({
-    ...msg,
-    content: msg.content.replace(/\n/g, '<br>'),
-  })),
-);
 </script>
 
 <template>
   <div class="flex flex-col">
     <ScrollArea class="flex-grow p-4">
-      <div v-for="(message, index) in formattedMessages" :key="index" class="mb-4">
-        <div
-          :class="[
-            'max-w-[80%] rounded-lg border border-border p-2 shadow-md',
-            message.role === 'user' ? 'ml-auto bg-primary text-primary-foreground' : 'bg-card',
-          ]"
-        >
-          <p v-html="message.content"></p>
-        </div>
+      <div v-for="(message, index) in messages" :key="index" class="mb-4">
+        <ChatMessage :content="message.content" :role="message.role" />
+      </div>
+      <div v-if="isLoading" class="flex items-center justify-center">
+        <Spinner />
       </div>
     </ScrollArea>
-    <form @submit.prevent="onSubmit" class="border-t p-4">
+    <form class="border-t p-4" @submit.prevent="onSubmit">
       <div class="flex space-x-2">
         <Input
           v-model="inputMessage"
@@ -81,8 +77,9 @@ const formattedMessages = computed(() =>
           class="flex-grow"
           required
         />
-        <Button type="submit" :disabled="isLoading">
-          {{ isLoading ? 'Sending...' : 'Send' }}
+        <Button type="submit" :disabled="isLoading || isStreaming" size="icon">
+          <span class="sr-only"> {{ isLoading ? 'Sending...' : 'Send' }}</span>
+          <span class="i-lucide-send-horizontal size-6" />
         </Button>
       </div>
     </form>

@@ -9,6 +9,6 @@ import DarkModeToggle from '@/components/DarkModeToggle.vue';
       <h1 class="text-2xl font-bold">Hello Kasten</h1>
       <DarkModeToggle />
     </header>
-    <ChatInterface class="mx-auto h-[calc(100vh_-_140px)] max-w-screen-md" />
+    <ChatInterface class="mx-auto h-[calc(100vh_-_100px)] max-w-screen-md" />
   </div>
 </template>
