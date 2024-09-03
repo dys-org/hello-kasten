@@ -1,39 +1,30 @@
-# vue-project
+# Hello Kasten
 
-This template should help get you started developing with Vue 3 in Vite.
+A chat bot for Kasten that uses custom data uploaded to the OpenAI Assistant API.
+Ask it question about using Kasten.
 
-## Recommended IDE Setup
+## Getting Started
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+First, you'll need to get an OpenAI API key. You can get one [here](https://platform.openai.com/account/api-keys).
 
-## Type Support for `.vue` Imports in TS
+Once you have your API key, copy the `.env-example` file to `.env` and replace the `OPENAI_API_KEY` value with your actual API key.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+## Install the Dependencies
 
 ```sh
 pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+## Start the Frontend
 
 ```sh
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Start the Backend
 
 ```sh
-pnpm build
+pnpm dev:server
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
+Visit http://localhost:5173 to see the chatbot in action.
