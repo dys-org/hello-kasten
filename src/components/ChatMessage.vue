@@ -115,7 +115,7 @@ function removeHandlers(el: HTMLElement) {
     margin-bottom: 1rem;
   }
 
-  & p {
+  & P:not(:last-child) {
     margin-bottom: 1rem;
   }
 
