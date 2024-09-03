@@ -1,7 +1,9 @@
 # Hello Kasten
 
-A chat bot for Kasten that uses custom data uploaded to the OpenAI Assistant API.
-Ask it question about using Kasten.
+A chat bot for Veeam Kasten that uses custom data uploaded to the OpenAI Assistant API.
+I scraped data from the [Veeam Kasten documentation](https://docs.kasten.io/docs/kasten-platform/data-sources/veeam-kasten-data-sources/) and other public facing sources.
+
+Ask it question about using the Kasten Data Management Platform and it will respond with the relevant information.
 
 ## Getting Started
 
